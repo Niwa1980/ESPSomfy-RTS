@@ -1599,7 +1599,7 @@ void SomfyShade::unpublishDisco() {
   }
   else
     snprintf(topic, sizeof(topic), "%s/switch/%d/config", settings.MQTT.discoTopic, this->shadeId);
-  mqtt.unpublish(topic);
+  mqtt.unpublishDisco(topic);
 }
 void SomfyShade::publish() {
   if(mqtt.connected()) {
@@ -1667,9 +1667,9 @@ void SomfyShade::unpublish(uint8_t id) {
     if(settings.MQTT.pubDisco) {
       char topic[128] = "";
       snprintf(topic, sizeof(topic), "%s/cover/%d/config", settings.MQTT.discoTopic, id);
-      mqtt.unpublish(topic);
+      mqtt.unpublishDisco(topic);
       snprintf(topic, sizeof(topic), "%s/switch/%d/config", settings.MQTT.discoTopic, id);
-      mqtt.unpublish(topic);
+      mqtt.unpublishDisco(topic);
     }
   }
 }

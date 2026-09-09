@@ -9,6 +9,7 @@
 
 
 Preferences pref;
+extern ConfigSettings settings;
 
 void restore_options_t::fromJSON(JsonObject &obj) {
   if(obj.containsKey("shades")) this->shades = obj["shades"];
@@ -344,6 +345,26 @@ uint16_t ConfigSettings::calcNetRecSize() {
     + 5 // ETH.MDCPin
     + 5; // ETH.MDIOPin
 }
+bool MQTTSettings::isValidRootTopic(const char *topic) {
+  if(!topic) return false;
+  size_t len = strlen(topic);
+  if(len == 0 || len >= sizeof(MQTTSettings::rootTopic)) return false;
+  if(topic[0] == '/' || topic[0] == '$') return false;
+  bool hasContent = false;
+  for(size_t i = 0; i < len; i++) {
+    unsigned char c = (unsigned char)topic[i];
+    if(c == '+' || c == '#') return false;
+    if(c < 0x20 || c == 0x7F) return false;
+    if(c != ' ') hasContent = true;
+  }
+  return hasContent;
+}
+bool MQTTSettings::ensureRootTopic() {
+  if(this->rootTopic[0] != '\0') return false;
+  snprintf(this->rootTopic, sizeof(this->rootTopic), "espsomfy-%s", settings.serverId);
+  Serial.printf("MQTT: topic racine vide, defaut applique : %s\n", this->rootTopic);
+  return true;
+}
 bool MQTTSettings::begin() {
   this->load();
   return true;
@@ -373,6 +394,7 @@ bool MQTTSettings::toJSON(JsonObject &obj) {
   return true;
 }
 bool MQTTSettings::fromJSON(JsonObject &obj) {
+  if(obj.containsKey("rootTopic") && !MQTTSettings::isValidRootTopic(obj["rootTopic"] | "")) return false;
   if(obj.containsKey("enabled")) this->enabled = obj["enabled"];
   if(obj.containsKey("pubDisco")) this->pubDisco = obj["pubDisco"];
   this->parseValueString(obj, "protocol", this->protocol, sizeof(this->protocol));
@@ -385,6 +407,7 @@ bool MQTTSettings::fromJSON(JsonObject &obj) {
   return true;
 }
 bool MQTTSettings::save() {
+  this->ensureRootTopic();
   pref.begin("MQTT");
   pref.clear();
   pref.putString("protocol", this->protocol);
@@ -410,6 +433,7 @@ bool MQTTSettings::load() {
   this->enabled = pref.getBool("enabled", false);
   this->pubDisco = pref.getBool("pubDisco", false);
   pref.getString("discoTopic", this->discoTopic, sizeof(this->discoTopic));
+  if(this->ensureRootTopic()) pref.putString("rootTopic", this->rootTopic);
   pref.end();
   return true;
 }

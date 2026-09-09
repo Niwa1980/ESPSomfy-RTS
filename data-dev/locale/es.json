@@ -654,6 +654,7 @@
     "ERR_USERNAME_MAX_LENGTH_32": "La longitud máxima del nombre de usuario es de 32 caracteres.",
     "ERR_PASSWORD_MAX_LENGTH_32": "La longitud máxima de la contraseña es de 32 caracteres.",
     "ERR_ROOT_TOPIC_MAX_LENGTH_64": "La longitud máxima del topic raíz es de 64 caracteres.",
+    "ERR_ROOT_TOPIC_HINT": "El root topic no puede estar vacío, ni contener + o #, ni empezar por / o $: es lo que reserva a este módulo su propio espacio en el broker.",
     "ERR_NO_FILE_LITTLEFS_SELECTED": "Debes seleccionar un archivo binario de LittleFS para continuar.",
     "ERR_INVALID_FILE_LITTLEFS": "Este archivo no es un archivo binario de LittleFS válido.",
     "ERR_NO_FILE_FIRMWARE_SELECTED": "Debes seleccionar un archivo binario de firmware válido para continuar.",

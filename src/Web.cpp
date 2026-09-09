@@ -2620,8 +2620,11 @@ void Web::begin() {
       Serial.print(F("HTTP Method: "));
       Serial.println(server.method());
       if (method == HTTP_POST || method == HTTP_PUT) {
+        if(!settings.MQTT.fromJSON(obj)) {
+          server.send(400, _encoding_json, "{\"status\":\"ERROR\",\"desc\":\"Invalid MQTT root topic\"}");
+          return;
+        }
         mqtt.disconnect();
-        settings.MQTT.fromJSON(obj);
         settings.MQTT.save();
         JsonResponse resp;
         resp.beginResponse(&server, g_content, sizeof(g_content));

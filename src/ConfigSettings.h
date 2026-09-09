@@ -3,7 +3,7 @@
 #ifndef configsettings_h
 #define configsettings_h
 #include "WResp.h"
-#define FW_VERSION "v2.5.8"
+#define FW_VERSION "v2.5.9"
 enum class conn_types_t : byte {
     unset = 0x00,
     wifi = 0x01,
@@ -156,6 +156,8 @@ class MQTTSettings: BaseSettings {
     char password[33] = "";
     char rootTopic[65] = "";
     char discoTopic[65] = "homeassistant";
+    static bool isValidRootTopic(const char *topic);
+    bool ensureRootTopic();
     bool begin();
     bool save();
     bool load();
