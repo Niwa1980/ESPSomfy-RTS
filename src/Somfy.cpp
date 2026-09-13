@@ -5078,6 +5078,10 @@ void Transceiver::loop() {
   else if (this->receive(&rx)) {
     for(uint8_t i = 0; i < SOMFY_MAX_REPEATERS; i++) {
       if(somfy.repeaters[i] == frame.remoteAddress) {
+        if(frame.bitLength == 80 &&
+           (frame.cmd == somfy_commands::Favorite || frame.cmd == somfy_commands::Stop)) {
+          frame.encode80BitFrame(rx.payload, 1);
+        }
         tx_queue.push(&rx);
         Serial.println("Queued repeater frame...");
         break;
